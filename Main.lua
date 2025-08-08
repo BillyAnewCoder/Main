@@ -2627,33 +2627,10 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
       or IsolatePlayers
       or NilInstances and global_container.getnilinstances -- ! Make sure this accurately reflects everything below
 
-    local function fixExistingSpawnLocations()
-      for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("SpawnLocation") then
-          obj.Enabled = true
-          obj.Neutral = true
-          obj.Duration = 10
-          if not obj.Anchored then
-            obj.Anchored = true
-          end
-        end
-      end
-    end
-    
-    local function fixCharacterAutoLoads()
+    local function applyGameFixes()
       local Players = game:GetService("Players")
       Players.CharacterAutoLoads = true
-    end
-    
-    local function fixCollisionFidelity()
-      for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("TriangleMeshPart") then
-          obj.CollisionFidelity = Enum.CollisionFidelity.Default
-        end
-      end
-    end
-    
-    local function fixWorkspaceSettings()
+      
       workspace.FallenPartsDestroyHeight = -500
       workspace.Gravity = 196.2
       
@@ -2661,9 +2638,18 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
         workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
         workspace.CurrentCamera.CameraSubject = nil
       end
-    end
-    
-    local function clearBrokenServices()
+      
+      for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("SpawnLocation") then
+          obj.Enabled = true
+          obj.Neutral = true
+          obj.Duration = 10
+          obj.Anchored = true
+        elseif obj:IsA("TriangleMeshPart") then
+          obj.CollisionFidelity = Enum.CollisionFidelity.Default
+        end
+      end
+      
       pcall(function()
         game:GetService("Chat"):ClearAllChildren()
       end)
@@ -2672,11 +2658,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
       end)
     end
     
-    fixExistingSpawnLocations()
-    fixCharacterAutoLoads()
-    fixCollisionFidelity()
-    fixWorkspaceSettings()
-    clearBrokenServices()
+    applyGameFixes()
     
     save_hierarchy(ToSaveList)
 
