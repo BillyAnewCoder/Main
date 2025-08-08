@@ -2627,25 +2627,16 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
       or IsolatePlayers
       or NilInstances and global_container.getnilinstances -- ! Make sure this accurately reflects everything below
 
-    local function ensureSpawnLocation()
-      local hasSpawnLocation = false
+    local function fixExistingSpawnLocations()
       for _, obj in pairs(workspace:GetDescendants()) do
         if obj:IsA("SpawnLocation") then
-          hasSpawnLocation = true
-          break
+          obj.Enabled = true
+          obj.Neutral = true
+          obj.Duration = 10
+          if not obj.Anchored then
+            obj.Anchored = true
+          end
         end
-      end
-      
-      if not hasSpawnLocation then
-        local spawnPart = Instance.new("SpawnLocation")
-        spawnPart.Name = "SpawnLocation"
-        spawnPart.Size = Vector3.new(6, 1, 6)
-        spawnPart.Position = Vector3.new(0, 0.5, 0)
-        spawnPart.BrickColor = BrickColor.new("Bright green")
-        spawnPart.Material = Enum.Material.Grass
-        spawnPart.Parent = workspace
-        
-        ToSaveList[#ToSaveList + 1] = spawnPart
       end
     end
     
@@ -2681,7 +2672,7 @@ local function synsaveinstance(CustomOptions, CustomOptions2)
       end)
     end
     
-    ensureSpawnLocation()
+    fixExistingSpawnLocations()
     fixCharacterAutoLoads()
     fixCollisionFidelity()
     fixWorkspaceSettings()
